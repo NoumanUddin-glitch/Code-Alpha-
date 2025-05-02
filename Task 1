@@ -38,6 +38,4 @@ def hangman():
         print("\nCongratulations! You guessed the word:", word)
     else:
         print("\nGame Over. The word was:", word)
-
-# Run the game
 hangman()
