@@ -1,0 +1,61 @@
+import yfinance as yf
+
+class StockPortfolio:
+    def __init__(self):
+        self.portfolio = {}
+
+    def add_stock(self, symbol, shares):
+        if symbol in self.portfolio:
+            self.portfolio[symbol] += shares
+        else:
+            self.portfolio[symbol] = shares
+        print(f"✅ Added {shares} shares of {symbol.upper()}")
+
+    def remove_stock(self, symbol, shares):
+        if symbol in self.portfolio:
+            if self.portfolio[symbol] >= shares:
+                self.portfolio[symbol] -= shares
+                print(f"❌ Removed {shares} shares of {symbol.upper()}")
+                if self.portfolio[symbol] == 0:
+                    del self.portfolio[symbol]
+            else:
+                print("⚠️ Not enough shares to remove.")
+        else:
+            print("⚠️ Stock not found in portfolio.")
+
+    def get_stock_price(self, symbol):
+        try:
+            stock = yf.Ticker(symbol)
+            return stock.info['regularMarketPrice']
+        except Exception as e:
+            print(f"Error fetching price for {symbol}: {e}")
+            return None
+
+    def show_portfolio(self):
+        if not self.portfolio:
+            print("📭 Your portfolio is empty.")
+            return
+
+        total_value = 0
+        print("\n📊 Current Portfolio:")
+        print(f"{'Symbol':<10}{'Shares':<10}{'Price':<10}{'Value':<10}")
+        print("-" * 40)
+
+        for symbol, shares in self.portfolio.items():
+            price = self.get_stock_price(symbol)
+            if price is not None:
+                value = shares * price
+                total_value += value
+                print(f"{symbol.upper():<10}{shares:<10}{price:<10.2f}{value:<10.2f}")
+
+        print("-" * 40)
+        print(f"💰 Total Portfolio Value: ${total_value:.2f}\n")
+
+# Example usage
+portfolio = StockPortfolio()
+portfolio.add_stock("AAPL", 5)
+portfolio.add_stock("GOOGL", 2)
+portfolio.show_portfolio()
+
+portfolio.remove_stock("AAPL", 2)
+portfolio.show_portfolio()
